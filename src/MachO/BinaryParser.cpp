@@ -282,12 +282,16 @@ ok_error_t BinaryParser::parse_export_trie(exports_list_t& exports, uint64_t sta
     }
     std::string name = prefix + std::move(*suffix);
 
+// Alex Gallo: this check takes ages (100x longer) with large MachO binaries and the `invalid_names` result
+// is currently discarded outside this function. I remove it to speed up things.
+#if 0
     if (!is_printable(name)) {
       if (!*invalid_names) {
         LIEF_WARN("The export trie contains non-printable symbols");
         *invalid_names = true;
       }
     }
+#endif
 
     auto res_child_node_offet = stream_->read_uleb128();
     if (!res_child_node_offet) {
